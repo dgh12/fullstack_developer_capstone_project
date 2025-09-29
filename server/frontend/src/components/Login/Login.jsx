@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import "./Login.css";
 import Header from '../Header/Header';
+import go_home from '../assets/scripts';
 
 const Login = ({ onClose }) => {
 
@@ -9,7 +10,7 @@ const Login = ({ onClose }) => {
   const [password, setPassword] = useState("");
   const [open,setOpen] = useState(true)
 
-  let login_url = window.location.origin+"/djangoapp/login";
+  const login_url = "/djangoapp/login";
 
   const login = async (e) => {
     e.preventDefault();
@@ -36,7 +37,7 @@ const Login = ({ onClose }) => {
 };
 
   if (!open) {
-    window.location.href = "/";
+    go_home();
   };
   
 
