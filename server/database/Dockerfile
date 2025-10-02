@@ -10,7 +10,7 @@ ADD data/dealerships.json .
 ADD data/reviews.json .
 COPY . .
 RUN npm install
-
+ENV DEBUG=express:*
 EXPOSE 3030
 
 CMD [ "node", "app.js" ]

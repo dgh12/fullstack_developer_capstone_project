@@ -22,7 +22,6 @@ const Register = () => {
         e.preventDefault();
 
         // Send POST request to register endpoint
-        console.log(register_url);
         const res = await fetch(register_url, {    
             method: "POST",
             headers: {
@@ -44,7 +43,8 @@ const Register = () => {
             go_home();
         //    window.location.href = "/"; --- IGNORE ---
         }
-        else if (json.error === "Already exists") {
+        else if (json.error) {
+            console.log("json.error", json.error);
             alert("The user with the same username is already registered");
         }
 
