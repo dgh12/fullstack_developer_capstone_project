@@ -106,13 +106,22 @@ app.post('/insert_review', express.raw({ type: '*/*' }), async (req, res) => {
 		"car_model": data['car_model'],
 		"car_year": data['car_year'],
 	});
-
+  console.log(review._id);
   try {
     const savedReview = await review.save();
     res.json(savedReview);
   } catch (error) {
-		console.log(error);
     res.status(500).json({ error: 'Error inserting review' });
+  }
+});
+
+app.delete('/deleteReview/:id', async (req, res) => {
+  try {
+    const result = await Reviews.deleteOne({ review: req.params.id });
+    res.json({ message: `review ${req.params.id} deleted`, result: result });
+  } catch (error) {
+		console.log(error);
+    res.status(500).json({ error: 'Error deleting reviews' });
   }
 });
 

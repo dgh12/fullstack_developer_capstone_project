@@ -10,7 +10,7 @@ const Dealers = () => {
   let [states, setStates] = useState([])
 
   // let root_url = window.location.origin
-  let dealer_url ="/djangoapp/get_dealers";
+  const dealer_url = "/djangoapp/get_dealers";
   
   let dealer_url_by_state = "/djangoapp/get_dealers/";
  
@@ -62,7 +62,7 @@ return(
       <th>
       <select name="state" id="state" onChange={(e) => filterDealers(e.target.value)}>
       <option value="" selected disabled hidden>State</option>
-      <option value="All">All States</option>
+      <option value="all">All States</option>
       {states.map(state => (
           <option value={state}>{state}</option>
       ))}

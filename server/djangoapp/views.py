@@ -73,22 +73,16 @@ def registration(request):
         return JsonResponse(data)
     return JsonResponse({"error": "Invalid request"})
 
-# # Update the `get_dealerships` view to render the index page with
-# a list of dealerships
-# def get_dealerships(request):
-# ...
+# `get_dealerships` view
 @csrf_exempt
 def get_dealerships(request, state="all"):
     if(state == "all"):
        endpoint = "/fetchDealers"
     else:
-        endpoint = "fetchDealers/" + state
+        endpoint = "/fetchDealers/" + state
     dealerships = get_request(endpoint)
     return JsonResponse({"status":200, "dealers": dealerships})
-# # Update the `get_cars` view to render the index page with
-# a list of the cars from the dealership
-# def get_cars(request,dealer_id):
-# ...
+# `get_cars` view
 @csrf_exempt
 def get_cars(request):
     if request.method == "GET":
@@ -99,40 +93,32 @@ def get_cars(request):
         cars = []
         for car_model in car_models:
             cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
-        return JsonResponse({"carModels": cars})
+        return JsonResponse({"CarModels": cars})
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-# Create a `get_dealer_reviews` view to render the reviews of a dealer
-# def get_dealer_reviews(request,dealer_id):
-# ...      
+# `get_dealer_reviews` view 
 @csrf_exempt
 def get_dealer_reviews(request, dealer_id):
     if dealer_id:
-        endpoint = "/fetchReviews/dealer" + str(dealer_id)
+        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
             if 'review' in review_detail:
                 response = analyze_review_sentiments(review_detail['review'])
                 review_detail["sentiment"] = response["sentiment"]
-                
-
         return JsonResponse({"status":200, "reviews": reviews})
     return JsonResponse({"message": "bad request"}, status=400)
 
-# Create a `get_dealer_details` view to render the dealer details
-# def get_dealer_details(request, dealer_id):
-# ...
+# `get_dealer_details` view
 @csrf_exempt
 def get_dealer_details(request, dealer_id):
    if dealer_id:
-       endpoint = "/fetchReviews/" + str(dealer_id)
+       endpoint = "/fetchDealer/" + str(dealer_id)
        dealership = get_request(endpoint)
        return JsonResponse({"status":200, "dealer": dealership})
    return JsonResponse({"message": "bad request"}, status=400)
 
-# Create a `add_review` view to submit a review
-# def add_review(request):
-# ...
+# `add_review` view
 @csrf_exempt
 def add_review(request):
     if(request.user.is_anonymous == False):
@@ -142,4 +128,17 @@ def add_review(request):
             return JsonResponse(response, status=200)
         except:
             return JsonResponse({"message": "Error in posting review"}, status=401)
+    return JsonResponse({"message": "Unauthorized"}, status=403)
+
+# delete review view
+@csrf_exempt
+def delete_review(request, review_id):
+    if(request.user.is_anonymous == False):
+        print(f"Review id to delete: {review_id}")
+        try:
+            from .restapis import delete_review
+            response = delete_review(review_id)
+            return JsonResponse(response, status=200)
+        except:
+            return JsonResponse({"message": "Error in deleting review"}, status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)

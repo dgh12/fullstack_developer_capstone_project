@@ -19,6 +19,7 @@ def get_request(endpoint, **kwargs):
     if kwargs:
         for key, value in kwargs.items():
             params = params + key + "=" + str(value) + "&"
+            print(f"Key {key} Value {value}")
 
     requests_url = backend_url + endpoint + "?" + params
 
@@ -27,7 +28,7 @@ def get_request(endpoint, **kwargs):
         response = requests.get(requests_url)
         return response.json()
     except Exception as err:
-        print(f"Network exception occurred: \n {err=}, {type(err)=}")
+        print(f"Network exception occurred in restapis 1: \n {err=}, {type(err)=}")
         return {"message": "Network exception occurred"}
 
 
@@ -41,18 +42,29 @@ def analyze_review_sentiments(text):
         response = requests.get(request_url)
         return response.json()
     except Exception as err:
-        print(f"Network exception occurred: \n {err=}, {type(err)=}")
+        print(f"Network exception occurred in restapis 2: \n {err=}, {type(err)=}")
         return {"message": "Network exception occurred"}
 
 # def post_review(data_dict):
 # Add code for posting review
 def post_review(data_dict):
-    endpoint = "/postReview"
+    endpoint = "/insert_review"
     requests_url = backend_url + endpoint
     print("POST to {} ".format(requests_url))
     try:
         response = requests.post(requests_url, json=data_dict)
         return response.json()
     except Exception as err:
-        print(f"Network exception occurred: \n {err=}, {type(err)=}")
+        print(f"Network exception occurred in respais 3: \n {err=}, {type(err)=}")
+        return {"message": "Network exception occurred"}
+    
+def delete_review(review_id):
+    endpoint = f"/deleteReview/{review_id}"
+    requests_url = backend_url + endpoint
+    print("DELETE to {} ".format(requests_url))
+    try:
+        response = requests.delete(requests_url)
+        return response.json()
+    except Exception as err:
+        print(f"Network exception occurred in respais 4: \n {err=}, {type(err)=}")
         return {"message": "Network exception occurred"}
