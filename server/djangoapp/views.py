@@ -8,14 +8,14 @@ from django.contrib.auth import logout
 # from django.contrib import messages
 # from datetime import datetime
 
+from .restapis import get_request, analyze_review_sentiments, post_review
+from .populate import initiate
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
-from.models import CarModel, CarMake
-from .populate import initiate
-from .restapis import get_request, analyze_review_sentiments, post_review
+from .models import CarModel, CarMake
 
 
 # Get an instance of a logger
@@ -40,12 +40,14 @@ def login_user(request):
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
+
 # Create a `logout_request` view to handle sign out request
 @csrf_exempt
-def logout_request(request):
+def logout_request(request): 
     logout(request)
     data = {"userName":""}
     return JsonResponse(data)
+
 
 # Create a `registration` view to handle sign up request
 @csrf_exempt
@@ -62,16 +64,18 @@ def registration(request):
         try:
             User.objects.get(username=username)
             user_does_not_exist = False
-        except:
+        except Exception:
             logger.debug("{} is new user".format(username))
         if user_does_not_exist:
-            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, email= email, password=password)
+            user = User.objects.create_user(username=username, first_name=first_name,\
+                                last_name=last_name, email=email, password=password)
             login(request, user)
             data = {"userName": username, "status": "Authenticated"}
         else:
             data = {"userName": username, "error": "Already Registered"}
         return JsonResponse(data)
     return JsonResponse({"error": "Invalid request"})
+
 
 # `get_dealerships` view
 @csrf_exempt
@@ -82,6 +86,8 @@ def get_dealerships(request, state="all"):
         endpoint = "/fetchDealers/" + state
     dealerships = get_request(endpoint)
     return JsonResponse({"status":200, "dealers": dealerships})
+
+
 # `get_cars` view
 @csrf_exempt
 def get_cars(request):
@@ -96,6 +102,7 @@ def get_cars(request):
         return JsonResponse({"CarModels": cars})
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+
 # `get_dealer_reviews` view 
 @csrf_exempt
 def get_dealer_reviews(request, dealer_id):
@@ -109,6 +116,7 @@ def get_dealer_reviews(request, dealer_id):
         return JsonResponse({"status":200, "reviews": reviews})
     return JsonResponse({"message": "bad request"}, status=400)
 
+
 # `get_dealer_details` view
 @csrf_exempt
 def get_dealer_details(request, dealer_id):
@@ -117,6 +125,7 @@ def get_dealer_details(request, dealer_id):
        dealership = get_request(endpoint)
        return JsonResponse({"status":200, "dealer": dealership})
    return JsonResponse({"message": "bad request"}, status=400)
+
 
 # `add_review` view
 @csrf_exempt
@@ -129,6 +138,7 @@ def add_review(request):
         except:
             return JsonResponse({"message": "Error in posting review"}, status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)
+
 
 # delete review view
 @csrf_exempt

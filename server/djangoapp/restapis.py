@@ -14,6 +14,7 @@ sentiment_analyzer_url = os.getenv(
 # def get_request(endpoint, **kwargs):
 # Add code for get requests to back end
 
+
 def get_request(endpoint, **kwargs):
     params = ""
     if kwargs:
@@ -44,6 +45,7 @@ def analyze_review_sentiments(text):
     except Exception as err:
         print(f"Network exception occurred in restapis 2: \n {err=}, {type(err)=}")
         return {"message": "Network exception occurred"}
+    
 
 # def post_review(data_dict):
 # Add code for posting review
@@ -58,6 +60,7 @@ def post_review(data_dict):
         print(f"Network exception occurred in respais 3: \n {err=}, {type(err)=}")
         return {"message": "Network exception occurred"}
     
+
 def delete_review(review_id):
     endpoint = f"/deleteReview/{review_id}"
     requests_url = backend_url + endpoint
