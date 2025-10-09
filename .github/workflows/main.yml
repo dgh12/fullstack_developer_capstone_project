@@ -6,6 +6,7 @@
       pull_request:
         branches:
           - main
+      workflow_dispatch:
     jobs:
       lint_python:
         name: Lint Python Files
