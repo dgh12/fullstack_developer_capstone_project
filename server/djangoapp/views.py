@@ -43,9 +43,9 @@ def login_user(request):
 
 # Create a `logout_request` view to handle sign out request
 @csrf_exempt
-def logout_request(request): 
+def logout_request(request):
     logout(request)
-    data = {"userName":""}
+    data = {"userName": ""}
     return JsonResponse(data)
 
 
@@ -67,8 +67,11 @@ def registration(request):
         except Exception:
             logger.debug("{} is new user".format(username))
         if user_does_not_exist:
-            user = User.objects.create_user(username=username, first_name=first_name,\
-                                last_name=last_name, email=email, password=password)
+            user = User.objects.create_user(username=username,
+                                            first_name=first_name,
+                                            last_name=last_name,
+                                            email=email,
+                                            password=password)
             login(request, user)
             data = {"userName": username, "status": "Authenticated"}
         else:
@@ -80,12 +83,12 @@ def registration(request):
 # `get_dealerships` view
 @csrf_exempt
 def get_dealerships(request, state="all"):
-    if(state == "all"):
-       endpoint = "/fetchDealers"
+    if (state == "all"):
+        endpoint = "/fetchDealers"
     else:
         endpoint = "/fetchDealers/" + state
     dealerships = get_request(endpoint)
-    return JsonResponse({"status":200, "dealers": dealerships})
+    return JsonResponse({"status": 200, "dealers": dealerships})
 
 
 # `get_cars` view
@@ -98,12 +101,13 @@ def get_cars(request):
         car_models = CarModel.objects.select_related('car_make')
         cars = []
         for car_model in car_models:
-            cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
+            cars.append({"CarModel": car_model.name,
+                         "CarMake": car_model.car_make.name})
         return JsonResponse({"CarModels": cars})
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-# `get_dealer_reviews` view 
+# `get_dealer_reviews` view
 @csrf_exempt
 def get_dealer_reviews(request, dealer_id):
     if dealer_id:
@@ -113,42 +117,44 @@ def get_dealer_reviews(request, dealer_id):
             if 'review' in review_detail:
                 response = analyze_review_sentiments(review_detail['review'])
                 review_detail["sentiment"] = response["sentiment"]
-        return JsonResponse({"status":200, "reviews": reviews})
+        return JsonResponse({"status": 200, "reviews": reviews})
     return JsonResponse({"message": "bad request"}, status=400)
 
 
 # `get_dealer_details` view
 @csrf_exempt
 def get_dealer_details(request, dealer_id):
-   if dealer_id:
-       endpoint = "/fetchDealer/" + str(dealer_id)
-       dealership = get_request(endpoint)
-       return JsonResponse({"status":200, "dealer": dealership})
-   return JsonResponse({"message": "bad request"}, status=400)
+    if dealer_id:
+        endpoint = "/fetchDealer/" + str(dealer_id)
+        dealership = get_request(endpoint)
+        return JsonResponse({"status": 200, "dealer": dealership})
+    return JsonResponse({"message": "bad request"}, status=400)
 
 
 # `add_review` view
 @csrf_exempt
 def add_review(request):
-    if(request.user.is_anonymous == False):
+    if (request.user.is_anonymous is False):
         data = json.loads(request.body)
         try:
             response = post_review(data)
             return JsonResponse(response, status=200)
-        except:
-            return JsonResponse({"message": "Error in posting review"}, status=401)
+        except Exception:
+            return JsonResponse({"message": "Error in posting review"},
+                                status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)
 
 
 # delete review view
 @csrf_exempt
 def delete_review(request, review_id):
-    if(request.user.is_anonymous == False):
+    if (request.user.is_anonymous is False):
         print(f"Review id to delete: {review_id}")
         try:
             from .restapis import delete_review
             response = delete_review(review_id)
             return JsonResponse(response, status=200)
-        except:
-            return JsonResponse({"message": "Error in deleting review"}, status=401)
+        except Exception:
+            return JsonResponse({"message": "Error in deleting review"},
+                                status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)

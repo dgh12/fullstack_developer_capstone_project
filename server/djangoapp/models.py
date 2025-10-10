@@ -36,7 +36,7 @@ class CarModel(models.Model):
     WAGON = 'WAGON'
     COUPE = 'Coupe'
     HATCHBACK = 'Hatchback'
-    CONVERTIBLE = 'Convertible'   
+    CONVERTIBLE = 'Convertible'
     CAR_TYPE_CHOICES = [
         (SEDAN, 'Sedan'),
         (SUV, 'SUV'),
@@ -48,7 +48,8 @@ class CarModel(models.Model):
     car_make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     car_type = models.CharField(max_length=20, choices=CAR_TYPE_CHOICES)
-    year = models.IntegerField(validators=[MinValueValidator(2018), MaxValueValidator(2025)])
+    year = models.IntegerField(validators=[MinValueValidator(2018),
+                                           MaxValueValidator(2025)])
 
     def __str__(self):
         return f"{self.name} ({self.year}) - {self.car_type}"
