@@ -30,12 +30,21 @@ const PostReview = () => {
       return;
     }
 
+    let is_anonymous = false;
+
+    if (sessionStorage.getItem("username") ==! null) {
+      is_anonymous = true;
+    }
+
     let model_split = model.split(" ");
     let make_chosen = model_split[0];
     let model_chosen = model_split[1];
 
     let jsoninput = JSON.stringify({
-      "name": name,
+      "user": {
+        "name": name,
+        "is_anonymous": is_anonymous
+      },
       "dealership": id,
       "review": review,
       "purchase": true,
@@ -53,6 +62,9 @@ const PostReview = () => {
       },
       body: jsoninput,
   });
+  
+  const retobj = await res.json();
+  console.log(retobj);
   
     if (res.status === 200) {
       window.location.href = "/dealer/"+id;

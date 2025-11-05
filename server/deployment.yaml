@@ -20,10 +20,44 @@ spec:
         run: dealership
     spec:
       containers:
-      - image: us.icr.io/dheddin/dealership:latest
+      - image: us.icr.io/sn-labs-dghedding/nodeapp:latest 
+        imagePullPolicy: Always
+        name: nodeapp
+        ports:
+        - containerPort: 3030
+          protocol: TCP
+      - image: us.icr.io/sn-labs-dghedding/dealership:latest 
         imagePullPolicy: Always
         name: dealership
         ports:
         - containerPort: 8000
           protocol: TCP
+      initContainers:
+      - image: mongo:latest 
+        imagePullPolicy: Always
+        name: mongodb
+        volumeMounts:
+          - name: data
+            mountPath: /opt
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        startupProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - sleep 2 
+              - mongosh --eval "db.adminCommand('ping')"
+          failureThreshold: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        restartPolicy: Always
+      imagePullSecrets:
+      - name: icr
       restartPolicy: Always
+      volumes:
+        - name: data
+          emptyDir: {}

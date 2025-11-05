@@ -1,20 +1,19 @@
-# Uncomment the required imports before adding the code
+"""djangoapp views"""
 
 # from django.shortcuts import render
 # from django.http import HttpResponseRedirect, HttpResponse
+import logging
+import json
 from django.contrib.auth.models import User
 # from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import logout
 # from django.contrib import messages
 # from datetime import datetime
-
-from .restapis import get_request, analyze_review_sentiments, post_review
-from .populate import initiate
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
-import logging
-import json
 from django.views.decorators.csrf import csrf_exempt
+from .restapis import get_request, analyze_review_sentiments, post_review
+from .populate import initiate
 from .models import CarModel, CarMake
 
 
@@ -27,6 +26,7 @@ logger = logging.getLogger(__name__)
 # Create a `login_request` view to handle sign in request
 @csrf_exempt
 def login_user(request):
+    """Handle login request"""
     # Get username and password from request.POST dictionary
     data = json.loads(request.body)
     username = data['userName']
@@ -44,6 +44,7 @@ def login_user(request):
 # Create a `logout_request` view to handle sign out request
 @csrf_exempt
 def logout_request(request):
+    """Handle logout request"""
     logout(request)
     data = {"userName": ""}
     return JsonResponse(data)
@@ -52,6 +53,7 @@ def logout_request(request):
 # Create a `registration` view to handle sign up request
 @csrf_exempt
 def registration(request):
+    """Handle registration request"""
     # Get the user information from request.POST
     data = json.loads(request.body)
     username = data['userName']
@@ -65,7 +67,7 @@ def registration(request):
             User.objects.get(username=username)
             user_does_not_exist = False
         except Exception:
-            logger.debug("{} is new user".format(username))
+            logger.debug(f"%{username}% is new user")
         if user_does_not_exist:
             user = User.objects.create_user(username=username,
                                             first_name=first_name,
@@ -83,6 +85,7 @@ def registration(request):
 # `get_dealerships` view
 @csrf_exempt
 def get_dealerships(request, state="all"):
+    """Handle get dealerships request"""
     if (state == "all"):
         endpoint = "/fetchDealers"
     else:
@@ -94,6 +97,7 @@ def get_dealerships(request, state="all"):
 # `get_cars` view
 @csrf_exempt
 def get_cars(request):
+    """Handle get cars request"""
     if request.method == "GET":
         count = CarMake.objects.filter().count()
         if count == 0:
@@ -110,13 +114,17 @@ def get_cars(request):
 # `get_dealer_reviews` view
 @csrf_exempt
 def get_dealer_reviews(request, dealer_id):
+    """Handle get dealer reviews request"""
     if dealer_id:
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
             if 'review' in review_detail:
                 response = analyze_review_sentiments(review_detail['review'])
-                review_detail["sentiment"] = response["sentiment"]
+                try:
+                    review_detail["message"] = response["message"]
+                except KeyError:
+                    review_detail["sentiment"] = response["sentiment"]
         return JsonResponse({"status": 200, "reviews": reviews})
     return JsonResponse({"message": "bad request"}, status=400)
 
@@ -124,6 +132,7 @@ def get_dealer_reviews(request, dealer_id):
 # `get_dealer_details` view
 @csrf_exempt
 def get_dealer_details(request, dealer_id):
+    """Handle get dealer details request"""
     if dealer_id:
         endpoint = "/fetchDealer/" + str(dealer_id)
         dealership = get_request(endpoint)
@@ -134,27 +143,27 @@ def get_dealer_details(request, dealer_id):
 # `add_review` view
 @csrf_exempt
 def add_review(request):
-    if (request.user.is_anonymous is False):
-        data = json.loads(request.body)
+    """Handle add review request"""
+    data = json.loads(request.body)    
+    if (data["user"]["is_anonymous"] is False):
+        post_data = {}
+        
+        for key in data:
+            if key == "user":
+                value = data[key]["name"]
+                Key = "name"
+            else:
+                value = data[key]
+                Key = key
+            post_data[Key] = value
+
         try:
-            response = post_review(data)
+            print( "Posting review: ", post_data)
+            response = post_review(post_data)
             return JsonResponse(response, status=200)
-        except Exception:
-            return JsonResponse({"message": "Error in posting review"},
+        except Exception as error:
+            return JsonResponse({"message": "Error in posting review /n " + str(error)},
                                 status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)
 
 
-# delete review view
-@csrf_exempt
-def delete_review(request, review_id):
-    if (request.user.is_anonymous is False):
-        print(f"Review id to delete: {review_id}")
-        try:
-            from .restapis import delete_review
-            response = delete_review(review_id)
-            return JsonResponse(response, status=200)
-        except Exception:
-            return JsonResponse({"message": "Error in deleting review"},
-                                status=401)
-    return JsonResponse({"message": "Unauthorized"}, status=403)

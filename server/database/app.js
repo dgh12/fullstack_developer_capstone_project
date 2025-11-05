@@ -11,12 +11,21 @@ app.use(require('body-parser').urlencoded({ extended: false }));
 const reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8'));
 const dealerships_data = JSON.parse(fs.readFileSync("data/dealerships.json", 'utf8'));
 
-mongoose.connect("mongodb://mongo_db:27017/",{'dbName':'dealershipsDB'});
+const mongo_db = async function() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/",{'dbName':'dealershipsDB'}).catch(error => handleError(error));
+  console.log("Connected to MongoDB");
+}
 
+try {
+  mongo_db();
+} catch (error) {
+  console.log("Error: ", error);
+}
 
 const Reviews = require('./review');
 
 const Dealerships = require('./dealership');
+const { error } = require('console');
 
 try {
   Reviews.deleteMany({}).then(()=>{
@@ -24,9 +33,9 @@ try {
   });
   Dealerships.deleteMany({}).then(()=>{
     Dealerships.insertMany(dealerships_data.dealerships);
-  });
-  
+  }); 
 } catch (error) {
+  console.log("Error: ", error);
   res.status(500).json({ error: 'Error fetching documents' });
 }
 
@@ -94,6 +103,7 @@ app.post('/insert_review', express.raw({ type: '*/*' }), async (req, res) => {
   data = JSON.parse(req.body);
   const documents = await Reviews.find().sort( { id: -1 } );
   let new_id = documents[0].id+1;
+  console.log(data);
 
   const review = new Reviews({
 		"id": new_id,
@@ -106,22 +116,12 @@ app.post('/insert_review', express.raw({ type: '*/*' }), async (req, res) => {
 		"car_model": data.car_model,
 		"car_year": data.car_year,
 	});
-  console.log(review._id);
+  console.log(review._id + "\n" + review);
   try {
     const savedReview = await review.save();
     res.json(savedReview);
   } catch (error) {
-    res.status(500).json({ error: 'Error inserting review' });
-  }
-});
-
-app.delete('/deleteReview/:id', async (req, res) => {
-  try {
-    const result = await Reviews.deleteOne({ review: req.params.id });
-    res.json({ message: `review ${req.params.id} deleted`, result: result });
-  } catch (error) {
-		console.log(error);
-    res.status(500).json({ error: 'Error deleting reviews' });
+    res.status(500).json({ error: `Error inserting review \n ${error}` });
   }
 });
 

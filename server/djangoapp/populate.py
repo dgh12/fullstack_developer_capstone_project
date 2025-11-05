@@ -1,7 +1,9 @@
+"""populate the database with some sample data"""
 from .models import CarModel, CarMake
 
 
 def initiate():
+    """populate the database with some sample data"""
     car_make_data = [
         {"name": "Nissan", "description": "Japanese Car Manufacturer"},
         {"name": "Merzedes", "description": "German Car Manufacturer"},

@@ -1,10 +1,10 @@
-# Uncomment the imports before you add the code
+"""djangoapp URL Configuration"""
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
 
-app_name = 'djangoapp'
+APP_NAME = 'djangoapp'
 urlpatterns = [
     # # path for registration
     path(route='registration',
@@ -39,9 +39,6 @@ urlpatterns = [
          view=views.add_review,
          name="add_review"),
     # path for delete a review view
-    path(route="delete_review/<str:review_id>",
-         view=views.delete_review,
-         name="delete_review"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
