@@ -23,7 +23,7 @@ def get_request(endpoint, **kwargs):
             params = params + key + "=" + str(value) + "&"
             print(f"Key {key} Value {value}")
         requests_url = backend_url + endpoint + "?" + params
-    requests_url = backend_url + endpoint 
+    requests_url = backend_url + endpoint
     print(f"GET from {requests_url}")
     try:
         response = requests.get(requests_url, timeout=10)
@@ -33,7 +33,7 @@ def get_request(endpoint, **kwargs):
               \n {err=}, {type(err)=}")
         return {"message": f"Network exception occurred in restapis 1: \
               \n {err=}, {type(err)=}/n",
-                 "URL": f"{requests_url}"}
+                "URL": f"{requests_url}"}
 
 
 # def analyze_review_sentiments(text):
