@@ -144,10 +144,10 @@ def get_dealer_details(request, dealer_id):
 @csrf_exempt
 def add_review(request):
     """Handle add review request"""
-    data = json.loads(request.body)    
+    data = json.loads(request.body)
     if (data["user"]["is_anonymous"] is False):
         post_data = {}
-        
+
         for key in data:
             if key == "user":
                 value = data[key]["name"]
@@ -158,12 +158,11 @@ def add_review(request):
             post_data[Key] = value
 
         try:
-            print( "Posting review: ", post_data)
+            print("Posting review: ", post_data)
             response = post_review(post_data)
             return JsonResponse(response, status=200)
         except Exception as error:
-            return JsonResponse({"message": "Error in posting review /n " + str(error)},
+            return JsonResponse({"message": "Error in posting review /n "
+                                 + str(error)},
                                 status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)
-
-

@@ -23,8 +23,7 @@ def get_request(endpoint, **kwargs):
             params = params + key + "=" + str(value) + "&"
             print(f"Key {key} Value {value}")
         requests_url = backend_url + endpoint + "?" + params
-    requests_url = backend_url + endpoint
-    
+    requests_url = backend_url + endpoint 
     print(f"GET from {requests_url}")
     try:
         response = requests.get(requests_url, timeout=10)
@@ -34,14 +33,15 @@ def get_request(endpoint, **kwargs):
               \n {err=}, {type(err)=}")
         return {"message": f"Network exception occurred in restapis 1: \
               \n {err=}, {type(err)=}/n",
-              "URL": f"{requests_url}"}
+                 "URL": f"{requests_url}"}
 
 
 # def analyze_review_sentiments(text):
 # request_url = sentiment_analyzer_url+"analyze/"+text
 # Add code for retrieving sentiments
 def analyze_review_sentiments(text):
-    """Analyze the sentiment of a given text using an external sentiment analysis service."""
+    """Analyze the sentiment of a given text using an
+       external sentiment analysis service."""
     request_url = sentiment_analyzer_url + "/analyze/" + text
     print(f"GET to {request_url}")
     try:
@@ -69,4 +69,3 @@ def post_review(data_dict):
               \n {err=}, {type(err)=}")
         return {f"Network exception occurred in respais 3: \
               \n {err=}, {type(err)=}"}
-
