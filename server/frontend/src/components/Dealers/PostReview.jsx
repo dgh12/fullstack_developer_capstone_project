@@ -32,7 +32,7 @@ const PostReview = () => {
 
     let is_anonymous = false;
 
-    if (sessionStorage.getItem("username") ==! null) {
+    if (sessionStorage.getItem("username") === null) {
       is_anonymous = true;
     }
 

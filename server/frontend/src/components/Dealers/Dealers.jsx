@@ -8,25 +8,48 @@ const Dealers = () => {
   const [dealersList, setDealersList] = useState([]);
   // let [state, setState] = useState("")
   let [states, setStates] = useState([])
+  let [searchQuery, setSearchQuery] = useState("");
+  let [hasSearched, setHasSearched] = useState(false);
 
   // let root_url = window.location.origin
   const dealer_url = "/djangoapp/get_dealers";
   
   let dealer_url_by_state = "/djangoapp/get_dealers/";
- 
-  const filterDealers = async (state) => {
-    dealer_url_by_state = dealer_url_by_state+state;
-    const res = await fetch(dealer_url_by_state, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    if(retobj.status === 200) {
-      let state_dealers = Array.from(retobj.dealers)
-      setDealersList(state_dealers)
-    }
+
+  const handleInputChange = (e) => {
+    let state = e.target.value;
+    setSearchQuery(state);
+    console.log("state:", searchQuery)
   }
 
-  const get_dealers = async ()=>{
+  const searchStates = async (e) => {
+    for(let state of states){
+      if(searchQuery.toLowerCase() === state.toLowerCase()){
+            dealer_url_by_state = dealer_url_by_state+state;
+            const res = await fetch(dealer_url_by_state, {
+              method: "GET"
+            });
+            const retobj = await res.json();
+            if(retobj.status === 200) {
+            let state_dealers = Array.from(retobj.dealers)
+              setDealersList(state_dealers)
+              setHasSearched(true);
+            }
+          }
+        }
+      }
+
+  const isSearching = () => {
+    return hasSearched;
+  }
+
+  const handleLostFocus = (e) => {
+      get_dealers();
+      setSearchQuery("");
+      setHasSearched(false);
+  }
+
+  const get_dealers = async () => {
     const res = await fetch(dealer_url, {
       method: "GET"
     });
@@ -60,14 +83,12 @@ return(
       <th>Address</th>
       <th>Zip</th>
       <th>
-      <select name="state" id="state" onChange={(e) => filterDealers(e.target.value)}>
-      <option value="" selected disabled hidden>State</option>
-      <option value="all">All States</option>
-      {states.map(state => (
-          <option value={state}>{state}</option>
-      ))}
-      </select>        
-
+        <form>
+          <input type="text" placeholder='Search States...' onChange={handleInputChange} value={searchQuery}/>
+          {isSearching() ? 
+          <input type="button" value="clear" onClick={handleLostFocus}/> : 
+          <input type="button" value="search"  onClick={searchStates}/>}
+        </form>
       </th>
       {isLoggedIn ? (
           <th>Review Dealer</th>
@@ -83,7 +104,11 @@ return(
           <td>{dealer['zip']}</td>
           <td>{dealer['state']}</td>
           {isLoggedIn ? (
-            <td><a href={`/postreview/${dealer['id']}`}><img src={review_icon} className="review_icon" alt="Post Review"/></a></td>
+            <td>
+              <a href={`/postreview/${dealer['id']}`}>
+                <img src={review_icon} className="review_icon" alt="Post Review"/>
+              </a>
+            </td>
            ):<></>
           }
         </tr>

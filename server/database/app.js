@@ -12,7 +12,7 @@ const reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8'));
 const dealerships_data = JSON.parse(fs.readFileSync("data/dealerships.json", 'utf8'));
 
 const mongo_db = async function() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/",{'dbName':'dealershipsDB'}).catch(error => handleError(error));
+  await mongoose.connect("mongodb://mongo_db:27017/",{'dbName':'dealershipsDB'}).catch(error => handleError(error));
   console.log("Connected to MongoDB");
 }
 
