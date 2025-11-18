@@ -166,3 +166,26 @@ def add_review(request):
                                  + str(error)},
                                 status=401)
     return JsonResponse({"message": "Unauthorized"}, status=403)
+
+@csrf_exempt
+def get_inventory(request, dealer_id):
+    """Handle get inventory request"""
+    data = request.GET
+    if (dealer_id):
+        if 'year' in data:
+            endpoint = f"/fetchCars/{str(dealer_id)}/{data['year']}"
+        elif 'make' in data:
+            endpoint = f"/fetchCars/make/{str(dealer_id)}/{data['make']}"
+        elif 'model' in data:
+            endpoint = f"/fetchCars/model/{str(dealer_id)}/{data['model']}"
+        elif 'mileage' in data:
+            endpoint = f"/fetchCars/milage/{str(dealer_id)}/{data['mileage']}"
+        elif 'price' in data:
+            endpoint = f"/fetchCars/price/{str(dealer_id)}/{data['price']}"
+        else:
+            endpoint = f"/fetchCars/{str(dealer_id)}"
+
+        inventory = get_request(endpoint)
+        print(inventory)
+        return JsonResponse({"status": 200, "cars": inventory})
+    return JsonResponse({"message": "bad request"}, status=400)

@@ -7,6 +7,7 @@ import neutral_icon from "../assets/neutral.png"
 import negative_icon from "../assets/negative.png"
 import review_icon from "../assets/reviewbutton.png"
 import Header from '../Header/Header';
+import SearchCars from './SearchCars';
 
 const Dealer = () => {
 
@@ -72,6 +73,7 @@ return(
       <h1 style={{color:"grey"}}>{dealer.full_name}{postReview}</h1>
       <h4  style={{color:"grey"}}>{dealer['city']},{dealer['address']}, Zip - {dealer['zip']}, {dealer['state']} </h4>
       </div>
+      <button><a href={`/searchcars/${id}`}>SearchCars</a></button>
       <div class="reviews_panel">
       {reviews.length === 0 && unreviewed === false ? (
         <text>Loading Reviews....</text>
@@ -83,7 +85,7 @@ return(
           <div className="reviewer">{review.name} {review.car_make} {review.car_model} {review.car_year}</div>
         </div>
       ))}
-    </div>  
+    </div> 
   </div>
 )
 }

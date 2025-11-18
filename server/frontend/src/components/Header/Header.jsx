@@ -40,7 +40,11 @@ if ( curr_user !== null &&  curr_user !== "") {
         <div>
           <nav class="navbar navbar-expand-lg navbar-light" style={{backgroundColor:"darkturquoise",height:"1in"}}>
             <div class="container-fluid">
-              <h2 style={{paddingRight: "5%"}}>Dealerships</h2>
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class='nav-item'>
+                  <a href='/dealers' class='nav-link'><h2 style={{paddingRight: "5%"}}>Dealerships</h2></a>
+                </li>
+              </ul>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
